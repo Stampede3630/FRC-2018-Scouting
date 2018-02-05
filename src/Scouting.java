@@ -27,6 +27,7 @@ public class Scouting extends GraphicsProgram {
 	private Boolean autoRun = false;
 	private Integer autoSwitch = 0;
 	private Integer autoScale = 0;
+	private Integer teleOppSwitch = 0;
 	private Integer teleSwitch = 0;
 	private Integer teleScale = 0;
 	private Integer vault = 0;
@@ -301,6 +302,7 @@ public class Scouting extends GraphicsProgram {
 			autoRun = false;
 			autoSwitch = 0;
 			autoScale = 0;
+			teleOppSwitch = 0;
 			teleSwitch = 0;
 			teleScale = 0;
 			vault = 0;
@@ -330,6 +332,7 @@ public class Scouting extends GraphicsProgram {
 				autoRun = false;
 				autoSwitch = 0;
 				autoScale = 0;
+				teleOppSwitch = 0;
 				teleSwitch = 0;
 				teleScale = 0;
 				vault = 0;
@@ -370,9 +373,13 @@ public class Scouting extends GraphicsProgram {
 				// teleop
 				if (isRed) {
 					// on red alliance
-					if (event.getSource() == redTopSwitch || event.getSource() == blueTopSwitch) {
+					if (event.getSource() == redTopSwitch) {
 						teleSwitch++;
 						System.out.println("Switch");
+					}
+					if (event.getSource() == blueTopSwitch) {
+						teleOppSwitch++;
+						System.out.println("OppSwitch");
 					}
 					if (event.getSource() == topScale) {
 						teleScale++;
@@ -392,9 +399,13 @@ public class Scouting extends GraphicsProgram {
 					}
 				} else {
 					// on the blue alliance
-					if (event.getSource() == redBottomSwitch || event.getSource() == blueBottomSwitch) {
+					if (event.getSource() == blueBottomSwitch) {
 						teleSwitch++;
 						System.out.println("Switch");
+					}
+					if (event.getSource() == redBottomSwitch) {
+						teleOppSwitch++;
+						System.out.println("OppSwitch");
 					}
 					if (event.getSource() == bottomScale) {
 						teleScale++;
@@ -423,10 +434,10 @@ public class Scouting extends GraphicsProgram {
 	 */
 	private void writeData() throws IOException {
 		String[] data = { matchNumber, teamNumber, autoRun.toString(), autoSwitch.toString(), autoScale.toString(),
-				vault.toString(), teleSwitch.toString(), teleScale.toString(), parked.toString(), climb.toString() };
+				vault.toString(), teleOppSwitch.toString(), teleSwitch.toString(), teleScale.toString(), parked.toString(), climb.toString() };
 		System.out.println("Match Number: " + matchNumber + " Team Number: " + teamNumber + " Auton Crossing "
 				+ autoRun.toString() + " Auton Switch " + autoSwitch.toString() + " Auton Scale " + autoScale.toString()
-				+ " Vaults " + vault.toString() + " Teleop Switch " + teleSwitch.toString() + " Teleop Scale "
+				+ " Vaults " + vault.toString() + " Teleop Opponents' Switch " + teleOppSwitch.toString() + " Teleop Switch " + teleSwitch.toString() + " Teleop Scale "
 				+ teleScale.toString() + " Parked " + parked.toString() + " Climbed " + climb.toString());
 		// Read Excel document first
 		FileInputStream input = new FileInputStream(new File("res/data.xlsx"));

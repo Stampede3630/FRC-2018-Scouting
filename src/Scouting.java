@@ -2,6 +2,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.Iterator;
+import java.time.Clock;
 import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;
 
@@ -26,13 +27,21 @@ public class Scouting extends GraphicsProgram {
 	private String teamNumber = null;
 	private Boolean autoRun = false;
 	private Integer autoSwitch = 0;
+	private Integer autoWrongSwitch = 0;
 	private Integer autoScale = 0;
-	private Integer teleOppSwitch = 0;
+	private Integer autoWrongScale = 0;
+	private Integer autoOppSwitch = 0;
+	private Integer autoOppWrongSwitch = 0;
+	private Integer autoVault = 0;
 	private Integer teleSwitch = 0;
+	private Integer teleWrongSwitch = 0;
 	private Integer teleScale = 0;
-	private Integer vault = 0;
-	private Boolean climb = false;
+	private Integer teleWrongScale = 0;
+	private Integer teleOppSwitch = 0;
+	private Integer teleOppWrongSwitch = 0;
+	private Integer teleVault = 0;
 	private Boolean parked = false;
+	private Boolean climb = false;
 
 	// All the interactors that will be called more than once
 	private GCanvas canvas = new GCanvas();
@@ -68,6 +77,7 @@ public class Scouting extends GraphicsProgram {
 	}
 
 	public void run() {
+		
 		initiation();
 		addFieldComponents();
 	}
@@ -301,13 +311,21 @@ public class Scouting extends GraphicsProgram {
 			teamNumber = null;
 			autoRun = false;
 			autoSwitch = 0;
+			autoWrongSwitch = 0;
 			autoScale = 0;
-			teleOppSwitch = 0;
+			autoWrongScale = 0;
+			autoOppSwitch = 0;
+			autoOppWrongSwitch = 0;
+			autoVault = 0;
 			teleSwitch = 0;
+			teleWrongSwitch = 0;
 			teleScale = 0;
-			vault = 0;
-			climb = false;
+			teleWrongScale = 0;
+			teleOppSwitch = 0;
+			teleOppWrongSwitch = 0;
+			teleVault = 0;
 			parked = false;
+			climb = false;
 		} else if (event.getSource() == submit) {
 			// sends the data over
 			if (gameOn && matchNumber != null && teamNumber != null && mode.getSelectedIndex() == 2) {
@@ -331,11 +349,19 @@ public class Scouting extends GraphicsProgram {
 				teamNumber = null;
 				autoRun = false;
 				autoSwitch = 0;
+				autoWrongSwitch = 0;
 				autoScale = 0;
-				teleOppSwitch = 0;
+				autoWrongScale = 0;
+				autoOppSwitch = 0;
+				autoOppWrongSwitch = 0;
+				autoVault = 0;
 				teleSwitch = 0;
+				teleWrongSwitch = 0;
 				teleScale = 0;
-				vault = 0;
+				teleWrongScale = 0;
+				teleOppSwitch = 0;
+				teleOppWrongSwitch = 0;
+				teleVault = 0;
 				parked = false;
 				climb = false;
 				start.setEnabled(true);
@@ -344,29 +370,73 @@ public class Scouting extends GraphicsProgram {
 		if (gameOn) {
 			if (mode.getSelectedIndex() == 1) {
 				// autonomous mode
-				if (event.getSource() == blueLine || event.getSource() == redLine) {
-					autoRun = true;
-					System.out.println("Auton crossed");
-				}
 				if (isRed) {
 					// on red alliance
-					if (event.getSource() == redTopSwitch || event.getSource() == blueTopSwitch) {
+					if (event.getSource() == redLine) {
+						autoRun = true;
+						System.out.println("Auton Crossed");
+					}
+					if (event.getSource() == redTopSwitch) {
 						autoSwitch++;
 						System.out.println("Switch");
+					}
+					if (event.getSource() == redBottomSwitch) {
+						autoWrongSwitch++;
+						System.out.println("Wrong Switch");
 					}
 					if (event.getSource() == topScale) {
 						autoScale++;
-						System.out.print("Scale");
+						System.out.println("Scale");
+					}
+					if (event.getSource() == bottomScale) {
+						autoWrongScale++;
+						System.out.println("Wrong Scale");
+					}
+					if (event.getSource() == blueTopSwitch) {
+						autoOppSwitch++;
+						System.out.println("Opponents' Switch");
+					}
+					if (event.getSource() == blueBottomSwitch) {
+						autoOppWrongSwitch++;
+						System.out.println("Opponents' Wrong Switch");
+					}
+					if (event.getSource() == redVault) {
+						autoVault++;
+						System.out.println("Vault");
 					}
 				} else {
 					// on the blue alliance
-					if (event.getSource() == redBottomSwitch || event.getSource() == blueBottomSwitch) {
+					if (event.getSource() == blueLine) {
+						autoRun = true;
+						System.out.println("Auton Crossed");
+					}
+					if (event.getSource() == blueBottomSwitch) {
 						autoSwitch++;
 						System.out.println("Switch");
 					}
+					if (event.getSource() == blueTopSwitch) {
+						autoWrongSwitch++;
+						System.out.println("Wrong Switch");
+					}
 					if (event.getSource() == bottomScale) {
 						autoScale++;
-						System.out.print("Scale");
+						System.out.println("Scale");
+					}
+					if (event.getSource() == topScale) {
+						autoWrongScale++;
+						System.out.println("Wrong Scale");
+					}
+					if (event.getSource() == redBottomSwitch) {
+						autoOppSwitch++;
+						System.out.println("Opponents' Switch");
+					}
+					if (event.getSource() == redTopSwitch) {
+						autoOppWrongSwitch++;
+						System.out.println("Opponents' Wrong Switch");
+					}
+					if (event.getSource() == blueVault) {
+						autoVault++;
+						System.out.println("Vault");
 					}
 				}
 			} else if (mode.getSelectedIndex() == 2) {
@@ -377,16 +447,28 @@ public class Scouting extends GraphicsProgram {
 						teleSwitch++;
 						System.out.println("Switch");
 					}
-					if (event.getSource() == blueTopSwitch) {
-						teleOppSwitch++;
-						System.out.println("OppSwitch");
+					if (event.getSource() == redBottomSwitch) {
+						teleWrongSwitch++;
+						System.out.println("Wrong Switch");
 					}
 					if (event.getSource() == topScale) {
 						teleScale++;
-						System.out.print("Scale");
+						System.out.println("Scale");
+					}
+					if (event.getSource() == bottomScale) {
+						teleWrongScale++;
+						System.out.println("Wrong Scale");
+					}
+					if (event.getSource() == blueTopSwitch) {
+						teleOppSwitch++;
+						System.out.println("Opponents' Switch");
+					}
+					if (event.getSource() == blueBottomSwitch) {
+						teleOppWrongSwitch++;
+						System.out.println("Opponents' Wrong Switch");
 					}
 					if (event.getSource() == redVault) {
-						vault++;
+						teleVault++;
 						System.out.println("Vault");
 					}
 					if (event.getSource() == redPark) {
@@ -403,16 +485,28 @@ public class Scouting extends GraphicsProgram {
 						teleSwitch++;
 						System.out.println("Switch");
 					}
-					if (event.getSource() == redBottomSwitch) {
-						teleOppSwitch++;
-						System.out.println("OppSwitch");
+					if (event.getSource() == blueTopSwitch) {
+						teleWrongSwitch++;
+						System.out.println("Wrong Switch");
 					}
 					if (event.getSource() == bottomScale) {
 						teleScale++;
-						System.out.print("Scale");
+						System.out.println("Scale");
+					}
+					if (event.getSource() == topScale) {
+						teleWrongScale++;
+						System.out.println("Wrong Scale");
+					}
+					if (event.getSource() == redBottomSwitch) {
+						teleOppSwitch++;
+						System.out.println("Opponents' Switch");
+					}
+					if (event.getSource() == redTopSwitch) {
+						teleOppWrongSwitch++;
+						System.out.println("Opponents' Wrong Switch");
 					}
 					if (event.getSource() == blueVault) {
-						vault++;
+						teleVault++;
 						System.out.println("Vault");
 					}
 					if (event.getSource() == bluePark) {
@@ -433,12 +527,19 @@ public class Scouting extends GraphicsProgram {
 	 * writes data to the excel document
 	 */
 	private void writeData() throws IOException {
-		String[] data = { matchNumber, teamNumber, autoRun.toString(), autoSwitch.toString(), autoScale.toString(),
-				vault.toString(), teleOppSwitch.toString(), teleSwitch.toString(), teleScale.toString(), parked.toString(), climb.toString() };
-		System.out.println("Match Number: " + matchNumber + " Team Number: " + teamNumber + " Auton Crossing "
-				+ autoRun.toString() + " Auton Switch " + autoSwitch.toString() + " Auton Scale " + autoScale.toString()
-				+ " Vaults " + vault.toString() + " Teleop Opponents' Switch " + teleOppSwitch.toString() + " Teleop Switch " + teleSwitch.toString() + " Teleop Scale "
-				+ teleScale.toString() + " Parked " + parked.toString() + " Climbed " + climb.toString());
+		String[] data = { matchNumber, teamNumber, autoRun.toString(), autoSwitch.toString(), autoWrongSwitch.toString(),
+				autoScale.toString(), autoWrongScale.toString(), autoOppSwitch.toString(), autoOppWrongSwitch.toString(),
+				autoVault.toString(), teleSwitch.toString(), teleWrongSwitch.toString(), teleScale.toString(), teleWrongScale.toString(), 
+				teleOppSwitch.toString(), teleOppWrongSwitch.toString(), teleVault.toString(), parked.toString(), climb.toString() };
+		System.out.println("Match Number: " + matchNumber + " Team Number: " + teamNumber + " Auton Crossing " + autoRun.toString() 
+				+ " Auton Switch " + autoSwitch.toString() +  " Auton Wrong Switch " + autoWrongSwitch.toString() + " Auton Scale "
+				+ autoScale.toString() + " Auton Wrong Scale " + autoWrongScale.toString() + " Auton Opponents' Switch "
+				+ autoOppSwitch.toString() + " Auton Opponents' Wrong Switch " + autoOppWrongSwitch.toString()
+				+ " Auton Vaults " + autoVault.toString() + " Teleop Switch " + teleSwitch.toString()
+				+ " Teleop Wrong Switch " + teleWrongSwitch.toString() + " Teleop Scale " + teleScale.toString()
+				+ " Teleop Wrong Scale " + teleWrongScale.toString() + " Teleop Opponents' Switch "
+				+ teleOppSwitch.toString() + " Teleop Opponents' Wrong Switch " + teleOppWrongSwitch.toString()
+				+ " Teleop Vaults " + teleVault.toString() + " Parked " + parked.toString() + " Climbed " + climb.toString());
 		// Read Excel document first
 		FileInputStream input = new FileInputStream(new File("res/data.xlsx"));
 		// convert it into a POI object

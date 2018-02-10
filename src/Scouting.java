@@ -42,7 +42,8 @@ public class Scouting extends GraphicsProgram {
 	private Integer teleVault = 0;
 	private Boolean parked = false;
 	private Boolean climb = false;
-
+	private Clock startTime = Clock.systemUTC();
+	
 	// All the interactors that will be called more than once
 	private GCanvas canvas = new GCanvas();
 	private JTextField matchNum = new JTextField(5);
@@ -257,6 +258,7 @@ public class Scouting extends GraphicsProgram {
 			// When the match starts
 			if (!matchNum.getText().equals("")) {
 				gameOn = true;
+				startTime = Clock.systemUTC();
 				mode.setForeground(Color.ORANGE);
 				mode.setSelectedIndex(mode.getSelectedIndex() == 0 ? 1 : 2);
 				if (mode.getSelectedIndex() > 0)
@@ -326,6 +328,7 @@ public class Scouting extends GraphicsProgram {
 			teleVault = 0;
 			parked = false;
 			climb = false;
+			startTime = Clock.systemUTC();
 		} else if (event.getSource() == submit) {
 			// sends the data over
 			if (gameOn && matchNumber != null && teamNumber != null && mode.getSelectedIndex() == 2) {
@@ -364,6 +367,7 @@ public class Scouting extends GraphicsProgram {
 				teleVault = 0;
 				parked = false;
 				climb = false;
+				startTime = Clock.systemUTC();
 				start.setEnabled(true);
 			}
 		}

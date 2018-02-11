@@ -3,6 +3,10 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.Iterator;
 import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.OffsetTime;  
+import java.time.temporal.ChronoField;  
 import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;
 
@@ -42,7 +46,7 @@ public class Scouting extends GraphicsProgram {
 	private Integer teleVault = 0;
 	private Boolean parked = false;
 	private Boolean climb = false;
-	private Clock startTime = Clock.systemUTC();
+	
 	
 	// All the interactors that will be called more than once
 	private GCanvas canvas = new GCanvas();
@@ -258,7 +262,6 @@ public class Scouting extends GraphicsProgram {
 			// When the match starts
 			if (!matchNum.getText().equals("")) {
 				gameOn = true;
-				startTime = Clock.systemUTC();
 				mode.setForeground(Color.ORANGE);
 				mode.setSelectedIndex(mode.getSelectedIndex() == 0 ? 1 : 2);
 				if (mode.getSelectedIndex() > 0)
@@ -328,7 +331,6 @@ public class Scouting extends GraphicsProgram {
 			teleVault = 0;
 			parked = false;
 			climb = false;
-			startTime = Clock.systemUTC();
 		} else if (event.getSource() == submit) {
 			// sends the data over
 			if (gameOn && matchNumber != null && teamNumber != null && mode.getSelectedIndex() == 2) {
@@ -367,7 +369,6 @@ public class Scouting extends GraphicsProgram {
 				teleVault = 0;
 				parked = false;
 				climb = false;
-				startTime = Clock.systemUTC();
 				start.setEnabled(true);
 			}
 		}

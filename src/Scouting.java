@@ -9,6 +9,7 @@ import java.time.OffsetTime;
 import java.time.temporal.ChronoField;  
 import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;
+import java.sql;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -531,7 +532,7 @@ public class Scouting extends GraphicsProgram {
 	/*
 	 * writes data to the excel document
 	 */
-	private void writeData() throws IOException {
+	/*private void writeData() throws IOException {
 		String[] data = { matchNumber, teamNumber, autoRun.toString(), autoSwitch.toString(), autoWrongSwitch.toString(),
 				autoScale.toString(), autoWrongScale.toString(), autoOppSwitch.toString(), autoOppWrongSwitch.toString(),
 				autoVault.toString(), teleSwitch.toString(), teleWrongSwitch.toString(), teleScale.toString(), teleWrongScale.toString(), 
@@ -569,4 +570,5 @@ public class Scouting extends GraphicsProgram {
 		output.close();
 	}
 
-}
+}*/
+	private void 

@@ -336,6 +336,7 @@ public class Scouting extends GraphicsProgram {
 			teleVault = 0;
 			parked = false;
 			climb = false;
+			query = new StringBuilder( "INSERT INTO [dbo].[MATCH] ([TeamNum],[MATCHNUM],[AUTOLINE],[AUTOSWITCH],[AUTOSCALE],[CLIMBTYPE],[VAULT],[SWITCH],[SCALE]) VALUES  ");
 		} else if (event.getSource() == submit) {
 			// sends the data over
 			if (gameOn && matchNumber != null && teamNumber != null && mode.getSelectedIndex() == 2) {
@@ -376,6 +377,7 @@ public class Scouting extends GraphicsProgram {
 				parked = false;
 				climb = false;
 				start.setEnabled(true);
+				query = new StringBuilder( "INSERT INTO [dbo].[MATCH] ([TeamNum],[MATCHNUM],[AUTOLINE],[AUTOSWITCH],[AUTOSCALE],[CLIMBTYPE],[VAULT],[SWITCH],[SCALE]) VALUES  ");
 			}
 		}
 		if (gameOn) {

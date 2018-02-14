@@ -1,6 +1,8 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.util.Iterator;
 import java.time.Clock;
 import java.time.Duration;
@@ -9,7 +11,7 @@ import java.time.OffsetTime;
 import java.time.temporal.ChronoField;  
 import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;
-import java.sql;
+import java.sql.*;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -25,8 +27,9 @@ public class Scouting extends GraphicsProgram {
 
 	/** True after clicking the start button **/
 	private boolean gameOn;
-
+	StringBuilder query;
 	// data to record
+	private String connectionURL = "jdbc:sqlserver://frc3630.database.windows.net:1433;database=scouting;user=Stampede3630@frc3630;password=Whatsaspock?;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;;";
 	private String matchNumber = null;
 	private Boolean isRed = null;
 	private String teamNumber = null;
@@ -47,7 +50,7 @@ public class Scouting extends GraphicsProgram {
 	private Integer teleVault = 0;
 	private Boolean parked = false;
 	private Boolean climb = false;
-	
+	private String climbType = "Default";
 	
 	// All the interactors that will be called more than once
 	private GCanvas canvas = new GCanvas();
@@ -92,6 +95,7 @@ public class Scouting extends GraphicsProgram {
 	 * Adds all the graphics to canvas in the beginning.
 	 **/
 	private void initiation() {
+		query = new StringBuilder( "INSERT INTO [dbo].[MATCH] ([TeamNum],[MATCHNUM],[AUTOLINE],[AUTOSWITCH],[AUTOSCALE],[CLIMBTYPE],[VAULT],[SWITCH],[SCALE]) VALUES  ");
 		JLabel Red1 = new JLabel("RED 1");
 		Red1.setForeground(Color.RED);
 		JLabel Red2 = new JLabel("RED 2");
@@ -337,11 +341,12 @@ public class Scouting extends GraphicsProgram {
 			if (gameOn && matchNumber != null && teamNumber != null && mode.getSelectedIndex() == 2) {
 				gameOn = false;
 				mode.setForeground(Color.RED);
-				try {
+				//try {
 					writeData();
-				} catch (IOException e) {
+				//}
+				/*catch (IOException e) {
 					e.printStackTrace();
-				}
+				}*/
 				mode.setSelectedIndex(0);
 				matchNum.setText("");
 				red1.setText("");
@@ -571,4 +576,39 @@ public class Scouting extends GraphicsProgram {
 	}
 
 }*/
-	private void 
+	private void writeData(){
+		   try {
+			   	Connection _connection;
+			   	_connection = DriverManager.getConnection(connectionURL);
+			   	  query.append('(');
+			      query.append(teamNumber.toString());
+			      query.append(',');
+			      query.append(matchNumber.toString());
+			      query.append(',');
+			      if(autoRun) query.append(1);
+			      else query.append(0);
+			      query.append(',');
+			      query.append(autoSwitch.toString());
+			      query.append(',');
+			      query.append(autoScale.toString());
+			      query.append(',');
+			      query.append(climbType.toString());
+			      query.append(',');
+			      query.append(teleVault.toString());
+			      query.append(',');
+			      query.append(teleSwitch.toString());
+			      query.append(',');
+			      query.append(teleScale.toString());
+			   	  query.append(')');
+
+			      System.out.println(query.toString());
+			      PreparedStatement pstmt = _connection.prepareStatement(query.toString());
+			      pstmt.execute();
+			      //pstmt.executeQuery();
+			      pstmt.close();
+			   }
+			   catch (Exception e) {
+			      e.printStackTrace();
+			   }
+			}
+	}

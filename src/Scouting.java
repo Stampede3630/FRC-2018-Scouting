@@ -29,7 +29,7 @@ public class Scouting extends GraphicsProgram {
 	private boolean gameOn;
 	StringBuilder query;
 	// data to record
-	private String connectionURL = "jdbc:sqlserver://frc3630.database.windows.net:1433;database=scouting;user=Stampede3630@frc3630;password=Whatsaspock?;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;;";
+	private String connectionURL = "jdbc:sqlserver://SRT1700\\SQLEXPRESS:1433;user=sa;password=whatsaspock;";
 	private String matchNumber = null;
 	private Boolean isRed = null;
 	private String teamNumber = null;

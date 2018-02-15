@@ -96,7 +96,7 @@ public class Scouting extends GraphicsProgram {
 	 * Adds all the graphics to canvas in the beginning.
 	 **/
 	private void initiation() {
-		query = new StringBuilder( "INSERT INTO [dbo].[MATCH] ([TeamNum],[MATCHNUM],[AUTOLINE],[AUTOVAULT],[AUTOSWITCH],[AUTOSCALE],[VAULT],[SWITCH],[SCALE],[OPPSWITCH],[CLIMBTYPE],[NOTES]) VALUES  ");
+		query = new StringBuilder( "INSERT INTO [dbo].[MATCH] ([TEAMNUM],[MATCHNUM],[AUTOLINE],[AUTOVAULT],[AUTOSWITCH],[AUTOSCALE],[VAULT],[SWITCH],[SCALE],[OPPSWITCH],[CLIMBTYPE],[NOTES]) VALUES  ");
 		JLabel Red1 = new JLabel("RED 1");
 		Red1.setForeground(Color.RED);
 		JLabel Red2 = new JLabel("RED 2");
@@ -339,7 +339,7 @@ public class Scouting extends GraphicsProgram {
 			climb = false;
 			climbType = "Default";
 			notes = "Default";
-			query = new StringBuilder( "INSERT INTO [dbo].[MATCH] ([TeamNum],[MATCHNUM],[AUTOLINE],[AUTOVAULT],[AUTOSWITCH],[AUTOSCALE],[VAULT],[SWITCH],[SCALE],[OPPSWITCH],[CLIMBTYPE],[NOTES]) VALUES  ");
+			query = new StringBuilder( "INSERT INTO [dbo].[MATCH] ([TEAMNUM],[MATCHNUM],[AUTOLINE],[AUTOVAULT],[AUTOSWITCH],[AUTOSCALE],[VAULT],[SWITCH],[SCALE],[OPPSWITCH],[CLIMBTYPE],[NOTES]) VALUES  ");
 		} else if (event.getSource() == submit) {
 			// sends the data over
 			if (gameOn && matchNumber != null && teamNumber != null && mode.getSelectedIndex() == 2) {
@@ -382,7 +382,7 @@ public class Scouting extends GraphicsProgram {
 				start.setEnabled(true);
 				climbType = "Default";
 				notes = "Default";
-				query = new StringBuilder( "INSERT INTO [dbo].[MATCH] ([TeamNum],[MATCHNUM],[AUTOLINE],[AUTOVAULT],[AUTOSWITCH],[AUTOSCALE],[VAULT],[SWITCH],[SCALE],[OPPSWITCH],[CLIMBTYPE],[NOTES]) VALUES  ");
+				query = new StringBuilder( "INSERT INTO [dbo].[MATCH] ([TEAMNUM],[MATCHNUM],[AUTOLINE],[AUTOVAULT],[AUTOSWITCH],[AUTOSCALE],[VAULT],[SWITCH],[SCALE],[OPPSWITCH],[CLIMBTYPE],[NOTES]) VALUES  ");
 			}
 		}
 		if (gameOn) {

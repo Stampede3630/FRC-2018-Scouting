@@ -51,6 +51,7 @@ public class Scouting extends GraphicsProgram {
 	private Boolean parked = false;
 	private Boolean climb = false;
 	private String climbType = "Default";
+	private String notes = "Default";
 	
 	// All the interactors that will be called more than once
 	private GCanvas canvas = new GCanvas();
@@ -95,7 +96,7 @@ public class Scouting extends GraphicsProgram {
 	 * Adds all the graphics to canvas in the beginning.
 	 **/
 	private void initiation() {
-		query = new StringBuilder( "INSERT INTO [dbo].[MATCH] ([TeamNum],[MATCHNUM],[AUTOLINE],[AUTOSWITCH],[AUTOSCALE],[CLIMBTYPE],[VAULT],[SWITCH],[SCALE]) VALUES  ");
+		query = new StringBuilder( "INSERT INTO [dbo].[MATCH] ([TeamNum],[MATCHNUM],[AUTOLINE],[AUTOVAULT],[AUTOSWITCH],[AUTOSCALE],[VAULT],[SWITCH],[SCALE],[OPPSWITCH],[CLIMBTYPE],[NOTES]) VALUES  ");
 		JLabel Red1 = new JLabel("RED 1");
 		Red1.setForeground(Color.RED);
 		JLabel Red2 = new JLabel("RED 2");
@@ -336,7 +337,9 @@ public class Scouting extends GraphicsProgram {
 			teleVault = 0;
 			parked = false;
 			climb = false;
-			query = new StringBuilder( "INSERT INTO [dbo].[MATCH] ([TeamNum],[MATCHNUM],[AUTOLINE],[AUTOSWITCH],[AUTOSCALE],[CLIMBTYPE],[VAULT],[SWITCH],[SCALE]) VALUES  ");
+			climbType = "Default";
+			notes = "Default";
+			query = new StringBuilder( "INSERT INTO [dbo].[MATCH] ([TeamNum],[MATCHNUM],[AUTOLINE],[AUTOVAULT],[AUTOSWITCH],[AUTOSCALE],[VAULT],[SWITCH],[SCALE],[OPPSWITCH],[CLIMBTYPE],[NOTES]) VALUES  ");
 		} else if (event.getSource() == submit) {
 			// sends the data over
 			if (gameOn && matchNumber != null && teamNumber != null && mode.getSelectedIndex() == 2) {
@@ -377,7 +380,9 @@ public class Scouting extends GraphicsProgram {
 				parked = false;
 				climb = false;
 				start.setEnabled(true);
-				query = new StringBuilder( "INSERT INTO [dbo].[MATCH] ([TeamNum],[MATCHNUM],[AUTOLINE],[AUTOSWITCH],[AUTOSCALE],[CLIMBTYPE],[VAULT],[SWITCH],[SCALE]) VALUES  ");
+				climbType = "Default";
+				notes = "Default";
+				query = new StringBuilder( "INSERT INTO [dbo].[MATCH] ([TeamNum],[MATCHNUM],[AUTOLINE],[AUTOVAULT],[AUTOSWITCH],[AUTOSCALE],[VAULT],[SWITCH],[SCALE],[OPPSWITCH],[CLIMBTYPE],[NOTES]) VALUES  ");
 			}
 		}
 		if (gameOn) {
@@ -590,17 +595,23 @@ public class Scouting extends GraphicsProgram {
 			      if(autoRun) query.append(1);
 			      else query.append(0);
 			      query.append(',');
+			      query.append(autoVault.toString());
+			      query.append(',');
 			      query.append(autoSwitch.toString());
 			      query.append(',');
 			      query.append(autoScale.toString());
-			      query.append(',');
-			      query.append(climbType.toString());
 			      query.append(',');
 			      query.append(teleVault.toString());
 			      query.append(',');
 			      query.append(teleSwitch.toString());
 			      query.append(',');
 			      query.append(teleScale.toString());
+			   	  query.append(',');
+			   	  query.append(teleOppSwitch.toString());
+			   	  query.append(',');
+			   	  query.append(climbType.toString());
+			   	  query.append(',');
+			   	  query.append(notes.toString());
 			   	  query.append(')');
 
 			      System.out.println(query.toString());

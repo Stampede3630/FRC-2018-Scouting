@@ -62,6 +62,8 @@ public class Scouting extends GraphicsProgram {
 	private JTextField blue1;
 	private JTextField blue2;
 	private JTextField blue3;
+	private JTextField climbEntry;
+	private JTextField notesEntry;
 	private JComboBox<String> mode;
 	private JButton start;
 	private JButton reset;
@@ -109,6 +111,8 @@ public class Scouting extends GraphicsProgram {
 		Blue2.setForeground(Color.BLUE);
 		JLabel Blue3 = new JLabel("BLUE 3");
 		Blue3.setForeground(Color.BLUE);
+		JLabel climbEntry = new JLabel("CLIMB TYPE");
+		JLabel notesEntry = new JLabel("NOTES");
 
 		setCanvasSize(1000, 457);
 		canvas.setSize(1000, 457);
@@ -130,6 +134,8 @@ public class Scouting extends GraphicsProgram {
 		canvas.add(Blue3, 890, 130);
 		canvas.add(Blue2, 890, 225);
 		canvas.add(Blue1, 890, 320);
+		canvas.add(climbEntry, 410, 385);
+		canvas.add(notesEntry, 200, 85);
 
 		addInteractors();
 		System.out.println("Initialized...");
@@ -187,7 +193,7 @@ public class Scouting extends GraphicsProgram {
 		bluePark.setBorder(BorderFactory.createLineBorder(Color.BLUE));
 		bluePark.setOpaque(true);
 		bluePark.setBackground(Color.BLUE);
-
+		
 		redPark.setSize(40, 100);
 		canvas.add(redPark, 430, 190);
 		bluePark.setSize(40, 100);
@@ -234,6 +240,8 @@ public class Scouting extends GraphicsProgram {
 		blue1 = new JTextField(10);
 		blue2 = new JTextField(10);
 		blue3 = new JTextField(10);
+		climbEntry = new JTextField(15);
+		notesEntry = new JTextField(50);
 
 		String[] modes = { "Pending", "Autonomous", "Teleop" };
 		mode = new JComboBox<String>(modes);
@@ -252,6 +260,8 @@ public class Scouting extends GraphicsProgram {
 		canvas.add(blue3, 890, 145);
 		canvas.add(blue2, 890, 240);
 		canvas.add(blue1, 890, 335);
+		canvas.add(climbEntry, 410, 400);
+		canvas.add(notesEntry, 200, 100);
 		canvas.add(start, getWidth() - 300, 10);
 		canvas.add(reset, getWidth() - 200, 10);
 		canvas.add(submit, getWidth() - 100, 10);
@@ -386,6 +396,8 @@ public class Scouting extends GraphicsProgram {
 			}
 		}
 		if (gameOn) {
+			climbType = climbEntry.getText();
+			notes = notesEntry.getText();
 			if (mode.getSelectedIndex() == 1) {
 				// autonomous mode
 				if (isRed) {
@@ -609,9 +621,13 @@ public class Scouting extends GraphicsProgram {
 			   	  query.append(',');
 			   	  query.append(teleOppSwitch.toString());
 			   	  query.append(',');
+			   	  query.append("'");
 			   	  query.append(climbType.toString());
+			   	  query.append("'");
 			   	  query.append(',');
+			   	  query.append("'");
 			   	  query.append(notes.toString());
+			   	  query.append("'");
 			   	  query.append(')');
 
 			      System.out.println(query.toString());

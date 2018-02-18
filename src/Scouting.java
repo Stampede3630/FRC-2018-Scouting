@@ -12,6 +12,7 @@ import java.time.temporal.ChronoField;
 import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;
 import java.sql.*;
+import java.util.Timer;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -27,7 +28,8 @@ public class Scouting extends GraphicsProgram {
 
 	/** True after clicking the start button **/
 	private boolean gameOn;
-	StringBuilder query;
+	StringBuilder matchQuery;
+	StringBuilder cycleQuery;
 	// data to record
 	private String connectionURL = "jdbc:sqlserver://10.11.5.70\\SQLEXPRESS;user=Stampede3630;password=whatsaspock;";
 	private String matchNumber = null;
@@ -52,6 +54,14 @@ public class Scouting extends GraphicsProgram {
 	private Boolean climb = false;
 	private String climbType = "Default";
 	private String notes = "Default";
+	private Long startTime = (long) 0;
+	private Long currentTime = (long) 0;
+	private Double cycleStart = (double) 0;
+	private Double cycleEnd = (double) 0;
+	private Double cycleTime = (double) 0;
+	private String pathStart = "S";
+	private String pathEnd = "S";
+	
 	
 	// All the interactors that will be called more than once
 	private GCanvas canvas = new GCanvas();
@@ -82,6 +92,18 @@ public class Scouting extends GraphicsProgram {
 	private JButton blueTopSwitch;
 	private JButton redPark;
 	private JButton bluePark;
+	private JButton blueTopPortal;
+	private JButton blueBottomPortal;
+	private JButton redPowerCubeZone;
+	private JButton redPlatformCubes;
+	private JButton bluePlatformCubes;
+	private JButton bluePowerCubeZone;
+	private JButton redTopPortal;
+	private JButton redBottomPortal;
+	private JButton redExchange;
+	private JButton blueExchange;
+	private JButton dropGround;
+	private JButton pickupGround;
 	private GRect modeRect;
 
 	public static void main(String[] args) {
@@ -98,7 +120,8 @@ public class Scouting extends GraphicsProgram {
 	 * Adds all the graphics to canvas in the beginning.
 	 **/
 	private void initiation() {
-		query = new StringBuilder( "INSERT INTO [dbo].[MATCH] ([TEAMNUM],[MATCHNUM],[AUTOLINE],[AUTOVAULT],[AUTOSWITCH],[AUTOSCALE],[VAULT],[SWITCH],[SCALE],[OPPSWITCH],[CLIMBTYPE],[NOTES]) VALUES  ");
+		matchQuery = new StringBuilder( "INSERT INTO [dbo].[MATCH] ([TEAMNUM],[MATCHNUM],[AUTOLINE],[AUTOVAULT],[AUTOSWITCH],[AUTOSCALE],[VAULT],[SWITCH],[SCALE],[OPPSWITCH],[CLIMBTYPE],[NOTES]) VALUES  ");
+		cycleQuery = new StringBuilder("INSERT INTO [dbo].[CYCLETIME] ([TEAMNUM],[PATH],[TIME]) VALUES ");
 		JLabel Red1 = new JLabel("RED 1");
 		Red1.setForeground(Color.RED);
 		JLabel Red2 = new JLabel("RED 2");
@@ -148,10 +171,7 @@ public class Scouting extends GraphicsProgram {
 		blueLine = new JButton();
 		blueLine.setBorder(BorderFactory.createLineBorder(Color.BLUE));
 		blueLine.setContentAreaFilled(true);
-		blueRung = new JButton();
-		blueRung.setBorder(BorderFactory.createLineBorder(Color.BLUE));
-		blueRung.setContentAreaFilled(true);
-		blueVault = new JButton("Vault");
+		blueVault = new JButton("Dropoff");
 		blueVault.setBorder(BorderFactory.createLineBorder(Color.BLUE));
 		blueVault.setBackground(Color.BLUE);
 		bottomScale = new JButton("Scale");
@@ -168,10 +188,7 @@ public class Scouting extends GraphicsProgram {
 		redLine = new JButton();
 		redLine.setBorder(BorderFactory.createLineBorder(Color.RED));
 		redLine.setContentAreaFilled(true);
-		redRung = new JButton();
-		redRung.setBorder(BorderFactory.createLineBorder(Color.RED));
-		redRung.setContentAreaFilled(true);
-		redVault = new JButton("Vault");
+		redVault = new JButton("Dropoff");
 		redVault.setBorder(BorderFactory.createLineBorder(Color.RED));
 		redVault.setBackground(Color.RED);
 		topScale = new JButton("Scale");
@@ -185,24 +202,42 @@ public class Scouting extends GraphicsProgram {
 		redTopSwitch.setBorder(BorderFactory.createLineBorder(Color.RED));
 		redTopSwitch.setOpaque(true);
 		redTopSwitch.setBackground(Color.RED);
-		redPark = new JButton("Park");
-		redPark.setBorder(BorderFactory.createLineBorder(Color.RED));
-		redPark.setOpaque(true);
-		redPark.setBackground(Color.RED);
-		bluePark = new JButton("Park");
-		bluePark.setBorder(BorderFactory.createLineBorder(Color.BLUE));
-		bluePark.setOpaque(true);
-		bluePark.setBackground(Color.BLUE);
+		blueTopPortal = new JButton("Portal");
+		blueTopPortal.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+		blueTopPortal.setBackground(Color.BLUE);
+		blueBottomPortal = new JButton("Portal");
+		blueBottomPortal.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+		blueBottomPortal.setBackground(Color.BLUE);
+		redPowerCubeZone = new JButton("PCZ");
+		redPowerCubeZone.setBorder(BorderFactory.createLineBorder(Color.RED));
+		redPowerCubeZone.setBackground(Color.RED);
+		redPlatformCubes = new JButton("Platform Cubes");
+		redPlatformCubes.setBorder(BorderFactory.createLineBorder(Color.RED));
+		redPlatformCubes.setBackground(Color.RED);
+		bluePlatformCubes = new JButton("Platform Cubes");
+		bluePlatformCubes.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+		bluePlatformCubes.setBackground(Color.BLUE);
+		bluePowerCubeZone = new JButton("PCZ");
+		bluePowerCubeZone.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+		bluePowerCubeZone.setBackground(Color.BLUE);
+		redTopPortal = new JButton("Portal");
+		redTopPortal.setBorder(BorderFactory.createLineBorder(Color.RED));
+		redTopPortal.setBackground(Color.RED);
+		redBottomPortal = new JButton("Portal");
+		redBottomPortal.setBorder(BorderFactory.createLineBorder(Color.RED));
+		redBottomPortal.setBackground(Color.RED);
+		redExchange = new JButton("Pickup");
+		redExchange.setBorder(BorderFactory.createLineBorder(Color.RED));
+		redExchange.setBackground(Color.RED);
+		blueExchange = new JButton("Pickup");
+		blueExchange.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+		blueExchange.setBackground(Color.BLUE);
+		dropGround = new JButton("Drop Ground");
+		pickupGround = new JButton("Pickup Ground");
 		
-		redPark.setSize(40, 100);
-		canvas.add(redPark, 430, 190);
-		bluePark.setSize(40, 100);
-		canvas.add(bluePark, 535, 190);
 		blueLine.setSize(10, 410);
 		canvas.add(blueLine, 720, 40);
-		blueRung.setSize(20, 30);
-		canvas.add(blueRung, 505, 230);
-		blueVault.setSize(85, 65);
+		blueVault.setSize(85, 32);
 		canvas.add(blueVault, 810, 255);
 		bottomScale.setSize(60, 45);
 		canvas.add(bottomScale, 470, 297);
@@ -212,9 +247,7 @@ public class Scouting extends GraphicsProgram {
 		canvas.add(blueBottomSwitch, 640, 280);
 		redLine.setSize(10, 410);
 		canvas.add(redLine, 274, 40);
-		redRung.setSize(20, 30);
-		canvas.add(redRung, 477, 230);
-		redVault.setSize(85, 65);
+		redVault.setSize(85, 32);
 		canvas.add(redVault, 115, 170);
 		topScale.setSize(60, 45);
 		canvas.add(topScale, 474, 144);
@@ -222,7 +255,31 @@ public class Scouting extends GraphicsProgram {
 		redTopSwitch.setSize(65, 50);
 		canvas.add(redTopSwitch, 300, 156);
 		canvas.add(blueTopSwitch, 640, 157);
-
+		blueTopPortal.setSize(175, 55);
+		canvas.add(blueTopPortal, 15, 45);
+		blueBottomPortal.setSize(175, 55);
+		canvas.add(blueBottomPortal, 15, 385);
+		redTopPortal.setSize(175, 55);
+		canvas.add(redTopPortal, 810, 45);
+		redBottomPortal.setSize(175, 55);
+		canvas.add(redBottomPortal, 810, 385);
+		redPowerCubeZone.setSize(45, 50);
+		canvas.add(redPowerCubeZone, 255, 220);
+		bluePowerCubeZone.setSize(45, 50);
+		canvas.add(bluePowerCubeZone, 705, 220);
+		redPlatformCubes.setSize(100, 150);
+		canvas.add(redPlatformCubes, 365, 170);
+		bluePlatformCubes.setSize(100, 150);
+		canvas.add(bluePlatformCubes, 550, 170);
+		redExchange.setSize(85, 32);
+		canvas.add(redExchange, 115, 202);
+		blueExchange.setSize(85, 32);
+		canvas.add(blueExchange, 810, 287);
+		dropGround.setSize(100,15);
+		pickupGround.setSize(100,15);
+		canvas.add(dropGround, 160, 350);
+		canvas.add(pickupGround, 295, 350);
+		
 		addActionListeners();
 	}
 
@@ -274,8 +331,16 @@ public class Scouting extends GraphicsProgram {
 	 **/
 	@Override
 	public void actionPerformed(ActionEvent event) {
+		currentTime = System.nanoTime();
+		System.out.println((double) currentTime/1000000000-(double)startTime/1000000000);
 		if (event.getSource() == start) {
 			// When the match starts
+			if (mode.getSelectedIndex() == 0) {
+				startTime = System.nanoTime();
+				cycleStart = (double) startTime;
+				System.out.print("Start Time: ");
+				System.out.println(startTime.toString());
+			}
 			if (!matchNum.getText().equals("")) {
 				gameOn = true;
 				mode.setForeground(Color.ORANGE);
@@ -315,6 +380,7 @@ public class Scouting extends GraphicsProgram {
 			}
 		} else if (event.getSource() == reset) {
 			// When the match resets
+			System.out.println(currentTime-startTime);
 			gameOn = false;
 			mode.setForeground(Color.RED);
 			start.setText("Start");
@@ -327,6 +393,8 @@ public class Scouting extends GraphicsProgram {
 			blue1.setText("");
 			blue2.setText("");
 			blue3.setText("");
+			climbEntry.setText("");
+			notesEntry.setText("");
 			matchNumber = null;
 			isRed = null;
 			teamNumber = null;
@@ -349,14 +417,22 @@ public class Scouting extends GraphicsProgram {
 			climb = false;
 			climbType = "Default";
 			notes = "Default";
-			query = new StringBuilder( "INSERT INTO [dbo].[MATCH] ([TEAMNUM],[MATCHNUM],[AUTOLINE],[AUTOVAULT],[AUTOSWITCH],[AUTOSCALE],[VAULT],[SWITCH],[SCALE],[OPPSWITCH],[CLIMBTYPE],[NOTES]) VALUES  ");
+			startTime = System.nanoTime();
+			currentTime = System.nanoTime();
+			cycleStart = (double) 0;
+			cycleEnd = (double) 0;
+			cycleTime = (double) 0;
+			pathStart = "S";
+			pathEnd = "S";
+			cycleQuery = new StringBuilder("INSERT INTO [dbo].[CYCLETIME] ([TEAMNUM],[PATH],[TIME]) VALUES ");
+			matchQuery = new StringBuilder( "INSERT INTO [dbo].[MATCH] ([TEAMNUM],[MATCHNUM],[AUTOLINE],[AUTOVAULT],[AUTOSWITCH],[AUTOSCALE],[VAULT],[SWITCH],[SCALE],[OPPSWITCH],[CLIMBTYPE],[NOTES]) VALUES  ");
 		} else if (event.getSource() == submit) {
 			// sends the data over
 			if (gameOn && matchNumber != null && teamNumber != null && mode.getSelectedIndex() == 2) {
 				gameOn = false;
 				mode.setForeground(Color.RED);
 				//try {
-					writeData();
+					writeMatchData();
 				//}
 				/*catch (IOException e) {
 					e.printStackTrace();
@@ -369,6 +445,8 @@ public class Scouting extends GraphicsProgram {
 				blue1.setText("");
 				blue2.setText("");
 				blue3.setText("");
+				climbEntry.setText("");
+				notesEntry.setText("");
 				matchNumber = null;
 				isRed = null;
 				teamNumber = null;
@@ -392,12 +470,23 @@ public class Scouting extends GraphicsProgram {
 				start.setEnabled(true);
 				climbType = "Default";
 				notes = "Default";
-				query = new StringBuilder( "INSERT INTO [dbo].[MATCH] ([TEAMNUM],[MATCHNUM],[AUTOLINE],[AUTOVAULT],[AUTOSWITCH],[AUTOSCALE],[VAULT],[SWITCH],[SCALE],[OPPSWITCH],[CLIMBTYPE],[NOTES]) VALUES  ");
+				cycleStart = (double) 0;
+				cycleEnd = (double) 0;
+				cycleTime = (double) 0;
+				pathStart = "S";
+				pathEnd = "S";
+				startTime = System.nanoTime();
+				currentTime = System.nanoTime();
+				cycleQuery = new StringBuilder("INSERT INTO [dbo].[CYCLETIME] ([TEAMNUM],[PATH],[TIME]) VALUES ");
+				matchQuery = new StringBuilder( "INSERT INTO [dbo].[MATCH] ([TEAMNUM],[MATCHNUM],[AUTOLINE],[AUTOVAULT],[AUTOSWITCH],[AUTOSCALE],[VAULT],[SWITCH],[SCALE],[OPPSWITCH],[CLIMBTYPE],[NOTES]) VALUES  ");
 			}
 		}
 		if (gameOn) {
 			climbType = climbEntry.getText();
 			notes = notesEntry.getText();
+			if (currentTime/1000000000-startTime/1000000000 >= 15) {
+				mode.setSelectedIndex(2);
+			}
 			if (mode.getSelectedIndex() == 1) {
 				// autonomous mode
 				if (isRed) {
@@ -408,31 +497,79 @@ public class Scouting extends GraphicsProgram {
 					}
 					if (event.getSource() == redTopSwitch) {
 						autoSwitch++;
+						cycleEnd = (double) currentTime;
+						cycleTime = cycleEnd - cycleStart;
+						pathEnd = "AS";
+						writeCycleData();
 						System.out.println("Switch");
 					}
 					if (event.getSource() == redBottomSwitch) {
 						autoWrongSwitch++;
+						cycleEnd = (double) currentTime;
+						cycleTime = cycleEnd - cycleStart;
+						pathEnd = "AWS";
+						writeCycleData();
 						System.out.println("Wrong Switch");
 					}
 					if (event.getSource() == topScale) {
 						autoScale++;
+						cycleEnd = (double) currentTime;
+						cycleTime = cycleEnd - cycleStart;
+						pathEnd = "AM";
+						writeCycleData();
 						System.out.println("Scale");
 					}
 					if (event.getSource() == bottomScale) {
 						autoWrongScale++;
+						cycleEnd = (double) currentTime;
+						cycleTime = cycleEnd - cycleStart;
+						pathEnd = "AWM";
+						writeCycleData();
 						System.out.println("Wrong Scale");
 					}
 					if (event.getSource() == blueTopSwitch) {
 						autoOppSwitch++;
+						cycleEnd = (double) currentTime;
+						cycleTime = cycleEnd - cycleStart;
+						pathEnd = "AO";
+						writeCycleData();
 						System.out.println("Opponents' Switch");
 					}
 					if (event.getSource() == blueBottomSwitch) {
 						autoOppWrongSwitch++;
+						cycleEnd = (double) currentTime;
+						cycleTime = cycleEnd - cycleStart;
+						pathEnd = "AWO";
+						writeCycleData();
 						System.out.println("Opponents' Wrong Switch");
 					}
 					if (event.getSource() == redVault) {
 						autoVault++;
+						cycleEnd = (double) currentTime;
+						cycleTime = cycleEnd - cycleStart;
+						pathEnd = "AV";
+						writeCycleData();
 						System.out.println("Vault");
+					}
+					if (event.getSource() == redPowerCubeZone) {
+						cycleStart = (double) currentTime;
+						pathStart = "C";
+					}
+					if (event.getSource() == redPlatformCubes) {
+						cycleStart = (double) currentTime;
+						pathStart = "P";
+					}
+					if (event.getSource() == bluePlatformCubes) {
+						cycleStart = (double) currentTime;
+						pathStart = "M";
+					}
+					if (event.getSource() == redTopPortal) {
+						cycleStart = (double) currentTime;
+						pathStart = "O";
+					}
+					if (event.getSource() == redBottomPortal) {
+						cycleStart = (double) currentTime;
+						pathStart = "O";
 					}
 				} else {
 					// on the blue alliance
@@ -442,32 +579,81 @@ public class Scouting extends GraphicsProgram {
 					}
 					if (event.getSource() == blueBottomSwitch) {
 						autoSwitch++;
+						cycleEnd = (double) currentTime;
+						cycleTime = cycleEnd - cycleStart;
+						pathEnd = "AS";
+						writeCycleData();
 						System.out.println("Switch");
 					}
 					if (event.getSource() == blueTopSwitch) {
 						autoWrongSwitch++;
+						cycleEnd = (double) currentTime;
+						cycleTime = cycleEnd - cycleStart;
+						pathEnd = "AWS";
+						writeCycleData();
 						System.out.println("Wrong Switch");
 					}
 					if (event.getSource() == bottomScale) {
 						autoScale++;
+						cycleEnd = (double) currentTime;
+						cycleTime = cycleEnd - cycleStart;
+						pathEnd = "AM";
+						writeCycleData();
 						System.out.println("Scale");
 					}
 					if (event.getSource() == topScale) {
 						autoWrongScale++;
+						cycleEnd = (double) currentTime;
+						cycleTime = cycleEnd - cycleStart;
+						pathEnd = "AWM";
+						writeCycleData();
 						System.out.println("Wrong Scale");
 					}
 					if (event.getSource() == redBottomSwitch) {
 						autoOppSwitch++;
+						cycleEnd = (double) currentTime;
+						cycleTime = cycleEnd - cycleStart;
+						pathEnd = "AO";
+						writeCycleData();
 						System.out.println("Opponents' Switch");
 					}
 					if (event.getSource() == redTopSwitch) {
 						autoOppWrongSwitch++;
+						cycleEnd = (double) currentTime;
+						cycleTime = cycleEnd - cycleStart;
+						pathEnd = "AWO";
+						writeCycleData();
 						System.out.println("Opponents' Wrong Switch");
 					}
 					if (event.getSource() == blueVault) {
 						autoVault++;
+						cycleEnd = (double) currentTime;
+						cycleTime = cycleEnd - cycleStart;
+						pathEnd = "AV";
+						writeCycleData();
 						System.out.println("Vault");
 					}
+					if (event.getSource() == bluePowerCubeZone) {
+						cycleStart = (double) currentTime;
+						pathStart = "C";
+					}
+					if (event.getSource() == bluePlatformCubes) {
+						cycleStart = (double) currentTime;
+						pathStart = "P";
+					}
+					if (event.getSource() == redPlatformCubes) {
+						cycleStart = (double) currentTime;
+						pathStart = "M";
+					}
+					if (event.getSource() == blueTopPortal) {
+						cycleStart = (double) currentTime;
+						pathStart = "O";
+					}
+					if (event.getSource() == blueBottomPortal) {
+						cycleStart = (double) currentTime;
+						pathStart = "O";
+					}
+					
 				}
 			} else if (mode.getSelectedIndex() == 2) {
 				// teleop
@@ -475,31 +661,79 @@ public class Scouting extends GraphicsProgram {
 					// on red alliance
 					if (event.getSource() == redTopSwitch) {
 						teleSwitch++;
+						cycleEnd = (double) currentTime;
+						cycleTime = cycleEnd - cycleStart;
+						pathEnd = "S";
+						writeCycleData();
 						System.out.println("Switch");
 					}
 					if (event.getSource() == redBottomSwitch) {
 						teleWrongSwitch++;
+						cycleEnd = (double) currentTime;
+						cycleTime = cycleEnd - cycleStart;
+						pathEnd = "WS";
+						writeCycleData();
 						System.out.println("Wrong Switch");
 					}
 					if (event.getSource() == topScale) {
 						teleScale++;
+						cycleEnd = (double) currentTime;
+						cycleTime = cycleEnd - cycleStart;
+						pathEnd = "M";
+						writeCycleData();
 						System.out.println("Scale");
 					}
 					if (event.getSource() == bottomScale) {
 						teleWrongScale++;
+						cycleEnd = (double) currentTime;
+						cycleTime = cycleEnd - cycleStart;
+						pathEnd = "WM";
+						writeCycleData();
 						System.out.println("Wrong Scale");
 					}
 					if (event.getSource() == blueTopSwitch) {
 						teleOppSwitch++;
+						cycleEnd = (double) currentTime;
+						cycleTime = cycleEnd - cycleStart;
+						pathEnd = "O";
+						writeCycleData();
 						System.out.println("Opponents' Switch");
 					}
 					if (event.getSource() == blueBottomSwitch) {
 						teleOppWrongSwitch++;
+						cycleEnd = (double) currentTime;
+						cycleTime = cycleEnd - cycleStart;
+						pathEnd = "WO";
+						writeCycleData();
 						System.out.println("Opponents' Wrong Switch");
 					}
 					if (event.getSource() == redVault) {
 						teleVault++;
+						cycleEnd = (double) currentTime;
+						cycleTime = cycleEnd - cycleStart;
+						pathEnd = "V";
+						writeCycleData();
 						System.out.println("Vault");
+					}
+					if (event.getSource() == redPowerCubeZone) {
+						cycleStart = (double) currentTime;
+						pathStart = "C";
+					}
+					if (event.getSource() == redPlatformCubes) {
+						cycleStart = (double) currentTime;
+						pathStart = "P";
+					}
+					if (event.getSource() == bluePlatformCubes) {
+						cycleStart = (double) currentTime;
+						pathStart = "M";
+					}
+					if (event.getSource() == redTopPortal) {
+						cycleStart = (double) currentTime;
+						pathStart = "O";
+					}
+					if (event.getSource() == redBottomPortal) {
+						cycleStart = (double) currentTime;
+						pathStart = "O";
 					}
 					if (event.getSource() == redPark) {
 						parked = true;
@@ -513,31 +747,79 @@ public class Scouting extends GraphicsProgram {
 					// on the blue alliance
 					if (event.getSource() == blueBottomSwitch) {
 						teleSwitch++;
+						cycleEnd = (double) currentTime;
+						cycleTime = cycleEnd - cycleStart;
+						pathEnd = "S";
+						writeCycleData();
 						System.out.println("Switch");
 					}
 					if (event.getSource() == blueTopSwitch) {
 						teleWrongSwitch++;
+						cycleEnd = (double) currentTime;
+						cycleTime = cycleEnd - cycleStart;
+						pathEnd = "WS";
+						writeCycleData();
 						System.out.println("Wrong Switch");
 					}
 					if (event.getSource() == bottomScale) {
 						teleScale++;
+						cycleEnd = (double) currentTime;
+						cycleTime = cycleEnd - cycleStart;
+						pathEnd = "M";
+						writeCycleData();
 						System.out.println("Scale");
 					}
 					if (event.getSource() == topScale) {
 						teleWrongScale++;
+						cycleEnd = (double) currentTime;
+						cycleTime = cycleEnd - cycleStart;
+						pathEnd = "WM";
+						writeCycleData();
 						System.out.println("Wrong Scale");
 					}
 					if (event.getSource() == redBottomSwitch) {
 						teleOppSwitch++;
+						cycleEnd = (double) currentTime;
+						cycleTime = cycleEnd - cycleStart;
+						pathEnd = "O";
+						writeCycleData();
 						System.out.println("Opponents' Switch");
 					}
 					if (event.getSource() == redTopSwitch) {
 						teleOppWrongSwitch++;
+						cycleEnd = (double) currentTime;
+						cycleTime = cycleEnd - cycleStart;
+						pathEnd = "WO";
+						writeCycleData();
 						System.out.println("Opponents' Wrong Switch");
 					}
 					if (event.getSource() == blueVault) {
 						teleVault++;
+						cycleEnd = (double) currentTime;
+						cycleTime = cycleEnd - cycleStart;
+						pathEnd = "V";
+						writeCycleData();
 						System.out.println("Vault");
+					}
+					if (event.getSource() == bluePowerCubeZone) {
+						cycleStart = (double) currentTime;
+						pathStart = "C";
+					}
+					if (event.getSource() == bluePlatformCubes) {
+						cycleStart = (double) currentTime;
+						pathStart = "P";
+					}
+					if (event.getSource() == redPlatformCubes) {
+						cycleStart = (double) currentTime;
+						pathStart = "M";
+					}
+					if (event.getSource() == blueTopPortal) {
+						cycleStart = (double) currentTime;
+						pathStart = "O";
+					}
+					if (event.getSource() == blueBottomPortal) {
+						cycleStart = (double) currentTime;
+						pathStart = "O";
 					}
 					if (event.getSource() == bluePark) {
 						parked = true;
@@ -595,49 +877,75 @@ public class Scouting extends GraphicsProgram {
 	}
 
 }*/
-	private void writeData(){
+	private void writeMatchData(){
 		   try {
 			   	Connection _connection;
 			   	_connection = DriverManager.getConnection(connectionURL);
-			   	  query.append('(');
-			      query.append(teamNumber.toString());
-			      query.append(',');
-			      query.append(matchNumber.toString());
-			      query.append(',');
-			      if(autoRun) query.append(1);
-			      else query.append(0);
-			      query.append(',');
-			      query.append(autoVault.toString());
-			      query.append(',');
-			      query.append(autoSwitch.toString());
-			      query.append(',');
-			      query.append(autoScale.toString());
-			      query.append(',');
-			      query.append(teleVault.toString());
-			      query.append(',');
-			      query.append(teleSwitch.toString());
-			      query.append(',');
-			      query.append(teleScale.toString());
-			   	  query.append(',');
-			   	  query.append(teleOppSwitch.toString());
-			   	  query.append(',');
-			   	  query.append("'");
-			   	  query.append(climbType.toString());
-			   	  query.append("'");
-			   	  query.append(',');
-			   	  query.append("'");
-			   	  query.append(notes.toString());
-			   	  query.append("'");
-			   	  query.append(')');
+			   	  matchQuery.append('(');
+			      matchQuery.append(teamNumber.toString());
+			      matchQuery.append(',');
+			      matchQuery.append(matchNumber.toString());
+			      matchQuery.append(',');
+			      if(autoRun) matchQuery.append(1);
+			      else matchQuery.append(0);
+			      matchQuery.append(',');
+			      matchQuery.append(autoVault.toString());
+			      matchQuery.append(',');
+			      matchQuery.append(autoSwitch.toString());
+			      matchQuery.append(',');
+			      matchQuery.append(autoScale.toString());
+			      matchQuery.append(',');
+			      matchQuery.append(teleVault.toString());
+			      matchQuery.append(',');
+			      matchQuery.append(teleSwitch.toString());
+			      matchQuery.append(',');
+			      matchQuery.append(teleScale.toString());
+			   	  matchQuery.append(',');
+			   	  matchQuery.append(teleOppSwitch.toString());
+			   	  matchQuery.append(',');
+			   	  matchQuery.append("'");
+			   	  matchQuery.append(climbType.toString());
+			   	  matchQuery.append("'");
+			   	  matchQuery.append(',');
+			   	  matchQuery.append("'");
+			   	  matchQuery.append(notes.toString());
+			   	  matchQuery.append("'");
+			   	  matchQuery.append(')');
 
-			      System.out.println(query.toString());
-			      PreparedStatement pstmt = _connection.prepareStatement(query.toString());
+			      System.out.println(matchQuery.toString());
+			      PreparedStatement pstmt = _connection.prepareStatement(matchQuery.toString());
 			      pstmt.execute();
-			      //pstmt.executeQuery();
+			      //pstmt.executematchQuery();
 			      pstmt.close();
 			   }
 			   catch (Exception e) {
 			      e.printStackTrace();
 			   }
 			}
-	}
+		private void writeCycleData(){
+			try {
+				Connection _connection;
+			   	_connection = DriverManager.getConnection(connectionURL);
+			   	cycleQuery.append('(');
+			   	cycleQuery.append(teamNumber);
+			   	cycleQuery.append(',');
+			   	cycleQuery.append("'");
+			   	cycleQuery.append(pathStart);
+			   	cycleQuery.append(pathEnd);
+			   	cycleQuery.append("'");
+			   	cycleQuery.append(',');
+			   	cycleQuery.append(cycleTime/1000000000);
+			   	cycleQuery.append(')');
+			   	
+			   	System.out.println(cycleQuery.toString());
+			    PreparedStatement pstmt = _connection.prepareStatement(cycleQuery.toString());
+			    pstmt.execute();
+			    //pstmt.executematchQuery();
+			    pstmt.close();
+			    cycleQuery = new StringBuilder("INSERT INTO [dbo].[CYCLETIME] ([TEAMNUM],[PATH],[TIME]) VALUES ");
+			   }
+			   catch (Exception e) {
+			      e.printStackTrace();
+			   }
+			}
+		}

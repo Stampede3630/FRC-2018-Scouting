@@ -482,6 +482,16 @@ public class Scouting extends GraphicsProgram {
 			}
 		}
 		if (gameOn) {
+			if (event.getSource() == dropGround) {
+				cycleEnd = (double) currentTime;
+				cycleTime = cycleEnd - cycleStart;
+				pathEnd = "G";
+				writeCycleData();
+			}
+			if (event.getSource() == pickupGround) {
+				cycleStart = (double) currentTime;
+				pathStart = "G";
+			}
 			climbType = climbEntry.getText();
 			notes = notesEntry.getText();
 			if (currentTime/1000000000-startTime/1000000000 >= 15) {

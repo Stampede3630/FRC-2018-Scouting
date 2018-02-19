@@ -50,8 +50,6 @@ public class Scouting extends GraphicsProgram {
 	private Integer teleOppSwitch = 0;
 	private Integer teleOppWrongSwitch = 0;
 	private Integer teleVault = 0;
-	private Boolean parked = false;
-	private Boolean climb = false;
 	private String climbType = "Default";
 	private String notes = "Default";
 	private Long startTime = (long) 0;
@@ -72,26 +70,22 @@ public class Scouting extends GraphicsProgram {
 	private JTextField blue1;
 	private JTextField blue2;
 	private JTextField blue3;
-	private JTextField climbEntry;
 	private JTextField notesEntry;
+	private JComboBox<String> climbEnter;
 	private JComboBox<String> mode;
 	private JButton start;
 	private JButton reset;
 	private JButton submit;
 	private JButton blueLine;
-	private JButton blueRung;
 	private JButton blueVault;
 	private JButton bottomScale;
 	private JButton redBottomSwitch;
 	private JButton blueBottomSwitch;
 	private JButton redLine;
-	private JButton redRung;
 	private JButton redVault;
 	private JButton topScale;
 	private JButton redTopSwitch;
 	private JButton blueTopSwitch;
-	private JButton redPark;
-	private JButton bluePark;
 	private JButton blueTopPortal;
 	private JButton blueBottomPortal;
 	private JButton redPowerCubeZone;
@@ -297,7 +291,6 @@ public class Scouting extends GraphicsProgram {
 		blue1 = new JTextField(10);
 		blue2 = new JTextField(10);
 		blue3 = new JTextField(10);
-		climbEntry = new JTextField(15);
 		notesEntry = new JTextField(50);
 
 		String[] modes = { "Pending", "Autonomous", "Teleop" };
@@ -308,6 +301,14 @@ public class Scouting extends GraphicsProgram {
 		mode.setOpaque(true);
 		mode.setBackground(Color.GRAY);
 
+		String[] climbEntry = { "Success", "Fail", "No Attempt" };
+		climbEnter = new JComboBox<String>(climbEntry);
+		climbEnter.setForeground(Color.BLACK);
+		climbEnter.setFont(new Font("Serif", Font.BOLD, 16));
+		climbEnter.setSelectedIndex(0);
+		climbEnter.setOpaque(true);
+		climbEnter.setBackground(Color.WHITE);
+		
 		canvas.add(matchNum, 100, 10);
 		canvas.add(mode, getWidth() / 2, 10);
 		mode.setVisible(true);
@@ -317,7 +318,7 @@ public class Scouting extends GraphicsProgram {
 		canvas.add(blue3, 890, 145);
 		canvas.add(blue2, 890, 240);
 		canvas.add(blue1, 890, 335);
-		canvas.add(climbEntry, 410, 400);
+		canvas.add(climbEnter, 410, 400);
 		canvas.add(notesEntry, 200, 100);
 		canvas.add(start, getWidth() - 300, 10);
 		canvas.add(reset, getWidth() - 200, 10);
@@ -393,7 +394,7 @@ public class Scouting extends GraphicsProgram {
 			blue1.setText("");
 			blue2.setText("");
 			blue3.setText("");
-			climbEntry.setText("");
+			climbEnter.setSelectedIndex(0);
 			notesEntry.setText("");
 			matchNumber = null;
 			isRed = null;
@@ -413,8 +414,6 @@ public class Scouting extends GraphicsProgram {
 			teleOppSwitch = 0;
 			teleOppWrongSwitch = 0;
 			teleVault = 0;
-			parked = false;
-			climb = false;
 			climbType = "Default";
 			notes = "Default";
 			startTime = System.nanoTime();
@@ -445,7 +444,7 @@ public class Scouting extends GraphicsProgram {
 				blue1.setText("");
 				blue2.setText("");
 				blue3.setText("");
-				climbEntry.setText("");
+				climbEnter.setSelectedIndex(0);
 				notesEntry.setText("");
 				matchNumber = null;
 				isRed = null;
@@ -465,8 +464,6 @@ public class Scouting extends GraphicsProgram {
 				teleOppSwitch = 0;
 				teleOppWrongSwitch = 0;
 				teleVault = 0;
-				parked = false;
-				climb = false;
 				start.setEnabled(true);
 				climbType = "Default";
 				notes = "Default";
@@ -492,7 +489,7 @@ public class Scouting extends GraphicsProgram {
 				cycleStart = (double) currentTime;
 				pathStart = "G";
 			}
-			climbType = climbEntry.getText();
+			climbType = climbEnter.toString();
 			notes = notesEntry.getText();
 			if (currentTime/1000000000-startTime/1000000000 >= 15) {
 				mode.setSelectedIndex(2);
@@ -745,14 +742,6 @@ public class Scouting extends GraphicsProgram {
 						cycleStart = (double) currentTime;
 						pathStart = "O";
 					}
-					if (event.getSource() == redPark) {
-						parked = true;
-						System.out.println("Parked");
-					}
-					if (event.getSource() == redRung) {
-						climb = true;
-						System.out.println("Climbed");
-					}
 				} else {
 					// on the blue alliance
 					if (event.getSource() == blueBottomSwitch) {
@@ -830,14 +819,6 @@ public class Scouting extends GraphicsProgram {
 					if (event.getSource() == blueBottomPortal) {
 						cycleStart = (double) currentTime;
 						pathStart = "O";
-					}
-					if (event.getSource() == bluePark) {
-						parked = true;
-						System.out.println("Parked");
-					}
-					if (event.getSource() == blueRung) {
-						climb = true;
-						System.out.println("Climbed");
 					}
 				}
 			}

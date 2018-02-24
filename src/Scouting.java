@@ -489,7 +489,7 @@ public class Scouting extends GraphicsProgram {
 				cycleStart = (double) currentTime;
 				pathStart = "G";
 			}
-			climbType = climbEnter.toString();
+			climbType = climbEnter.getSelectedItem().toString();
 			notes = notesEntry.getText();
 			if (currentTime/1000000000-startTime/1000000000 >= 15) {
 				mode.setSelectedIndex(2);

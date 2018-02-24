@@ -31,7 +31,7 @@ public class Scouting extends GraphicsProgram {
 	StringBuilder matchQuery;
 	StringBuilder cycleQuery;
 	// data to record
-	private String connectionURL = "jdbc:sqlserver://10.11.5.70\\SQLEXPRESS;user=Stampede3630;password=whatsaspock;";
+	private String connectionURL = "jdbc:sqlserver://192.168.36.30\\SQLEXPRESS;user=Stampede3630;password=whatsaspock;";
 	private String matchNumber = null;
 	private Boolean isRed = null;
 	private String teamNumber = null;

@@ -429,6 +429,7 @@ public class Scouting extends GraphicsProgram {
 			// sends the data over
 			if (gameOn && matchNumber != null && teamNumber != null && mode.getSelectedIndex() == 2) {
 				gameOn = false;
+				notes = notesEntry.getText();
 				mode.setForeground(Color.RED);
 				//try {
 					writeMatchData();

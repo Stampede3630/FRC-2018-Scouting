@@ -1,25 +1,11 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.util.Iterator;
-import java.time.Clock;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.OffsetTime;  
-import java.time.temporal.ChronoField;  
 import javax.swing.*;
-import javax.swing.plaf.ColorUIResource;
 import java.sql.*;
 import java.util.Timer;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import acm.graphics.*;
 import acm.program.GraphicsProgram;
 import acm.program.GraphicsProgramInterface;
@@ -53,7 +39,6 @@ public class Scouting extends GraphicsProgram {
 	private Double cycleTime = (double) 0;
 	private String pathStart = "S";
 	private String pathEnd = "S";
-	
 	
 	// All the interactors that will be called more than once
 	private GCanvas canvas = new GCanvas();
@@ -156,7 +141,7 @@ public class Scouting extends GraphicsProgram {
 		blueVault.setBorder(BorderFactory.createLineBorder(Color.BLUE));
 		blueVault.setBackground(Color.BLUE);
 		scale = new JButton("Scale");
-		scale.setBorder(BorderFactory.createLineBorder(Color.RED));
+		scale.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		redSwitch = new JButton("Switch");
 		redSwitch.setBorder(BorderFactory.createLineBorder(Color.RED));
 		line = new JButton("Auto Run");
@@ -695,6 +680,7 @@ public class Scouting extends GraphicsProgram {
 
 			      System.out.println(matchQuery.toString());
 			      
+			      DriverManager.setLoginTimeout(15);
 			      Connection _connection;
 				   	_connection = DriverManager.getConnection(connectionURL);
 			      PreparedStatement pstmt = _connection.prepareStatement(matchQuery.toString());
@@ -703,6 +689,14 @@ public class Scouting extends GraphicsProgram {
 			   }
 			   catch (Exception e) {
 			      e.printStackTrace();
+			      try {
+			            FileWriter writer = new FileWriter("errorlog.txt", true);
+			            writer.write(matchQuery.toString());
+			            writer.write("\r\n");
+			            writer.close();
+			        } catch (IOException error) {
+			            error.printStackTrace();
+			        }
 			   }
 			}
 		private void writeCycleData(String pathEnding){
@@ -725,10 +719,10 @@ public class Scouting extends GraphicsProgram {
 				   	cycleQuery.append(')');
 				   	
 				   	System.out.println(cycleQuery.toString());
-				   	cycleQuery = new StringBuilder("INSERT INTO [dbo].[CYCLETIME] ([TEAMNUM],[MATCHNUM],[PATH],[TIME]) VALUES ");
 				   	
 				   	pathStart = "D";
 				   	
+				   	DriverManager.setLoginTimeout(1);
 					Connection _connection;
 				   	_connection = DriverManager.getConnection(connectionURL);
 				    PreparedStatement pstmt = _connection.prepareStatement(cycleQuery.toString());
@@ -739,6 +733,15 @@ public class Scouting extends GraphicsProgram {
 			   }
 			   catch (Exception e) {
 			      e.printStackTrace();
+			      try {
+			            FileWriter writer = new FileWriter("errorlog.txt", true);
+			            writer.write(cycleQuery.toString());
+			            writer.write("\r\n");
+			            writer.close();
+			        } catch (IOException error) {
+			            error.printStackTrace();
+			        }
 			   }
+			cycleQuery = new StringBuilder("INSERT INTO [dbo].[CYCLETIME] ([TEAMNUM],[MATCHNUM],[PATH],[TIME]) VALUES ");
 			}
 		}

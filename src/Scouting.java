@@ -329,10 +329,10 @@ public class Scouting extends GraphicsProgram {
 						    }
 					    } catch (IOException e6) {
 					    	e6.printStackTrace();
-					    	errorQuery = null;
 					    }
 					} catch (Exception e1) {
 						e1.printStackTrace();
+						errorQuery = null;
 					}
 				}	
 			} catch (IOException e2)  {

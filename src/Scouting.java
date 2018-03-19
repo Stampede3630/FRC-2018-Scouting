@@ -2,9 +2,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.Iterator;
+import java.util.Timer;
 import javax.swing.*;
 import java.sql.*;
-import java.util.Timer;
 
 import acm.graphics.*;
 import acm.program.GraphicsProgram;
@@ -74,6 +74,7 @@ public class Scouting extends GraphicsProgram {
 	private JButton dropGround;
 	private JButton pickupGround;
 	private JButton resetCycle;
+	private JButton clearErrors;
 
 	public static void main(String[] args) {
 		(new Scouting()).start(args);
@@ -126,7 +127,7 @@ public class Scouting extends GraphicsProgram {
 		canvas.add(Blue3, 890, 130);
 		canvas.add(Blue2, 890, 225);
 		canvas.add(Blue1, 890, 320);
-		canvas.add(climbEntry, 410, 385);
+		canvas.add(climbEntry, 435, 385);
 		canvas.add(notesEntry, 200, 85);
 
 		addInteractors();
@@ -183,6 +184,7 @@ public class Scouting extends GraphicsProgram {
 		dropGround = new JButton("Drop Ground");
 		pickupGround = new JButton("Pickup Ground");
 		resetCycle = new JButton("Reset Cycle");
+		clearErrors = new JButton("Clear Error Log");
 		
 		blueVault.setSize(75, 28);
 		canvas.add(blueVault, 815, 256);
@@ -222,6 +224,8 @@ public class Scouting extends GraphicsProgram {
 		canvas.add(resetCycle, 610, 350);
 		line.setSize(90, 15);
 		canvas.add(line, 745, 350);
+		clearErrors.setSize(110, 15);
+		canvas.add(clearErrors, 450, 350);
 		
 		addActionListeners();
 	}
@@ -267,7 +271,7 @@ public class Scouting extends GraphicsProgram {
 		canvas.add(blue3, 890, 145);
 		canvas.add(blue2, 890, 240);
 		canvas.add(blue1, 890, 335);
-		canvas.add(climbEnter, 410, 400);
+		canvas.add(climbEnter, 435, 400);
 		canvas.add(notesEntry, 200, 100);
 		canvas.add(start, getWidth() - 300, 10);
 		canvas.add(reset, getWidth() - 200, 10);
@@ -283,6 +287,27 @@ public class Scouting extends GraphicsProgram {
 	public void actionPerformed(ActionEvent event) {
 		currentTime = System.nanoTime();
 		System.out.println((double) currentTime/1000000000-(double)startTime/1000000000);
+		if (event.getSource() == clearErrors) {
+			try {
+				BufferedReader fr = new BufferedReader(new FileReader("errorlog.txt"));
+				String errorQuery = fr.readLine();
+				fr.close();
+				System.out.println(errorQuery);
+				try {
+					DriverManager.setLoginTimeout(1);
+					Connection _connection;
+				   	_connection = DriverManager.getConnection(connectionURL);
+				    PreparedStatement pstmt = _connection.prepareStatement(errorQuery.toString());
+				    pstmt.execute();
+				    pstmt.close();
+					
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			} catch (IOException e2)  {
+				e2.printStackTrace();
+			}
+		}
 		if (event.getSource() == start) {
 			// When the match starts
 			if (mode.getSelectedIndex() == 0) {
@@ -694,8 +719,8 @@ public class Scouting extends GraphicsProgram {
 			            writer.write(matchQuery.toString());
 			            writer.write("\r\n");
 			            writer.close();
-			        } catch (IOException error) {
-			            error.printStackTrace();
+			        } catch (IOException e5) {
+			            e5.printStackTrace();
 			        }
 			   }
 			}
@@ -731,15 +756,15 @@ public class Scouting extends GraphicsProgram {
 				    
 				}
 			   }
-			   catch (Exception e) {
-			      e.printStackTrace();
+			   catch (Exception e3) {
+			      e3.printStackTrace();
 			      try {
 			            FileWriter writer = new FileWriter("errorlog.txt", true);
 			            writer.write(cycleQuery.toString());
 			            writer.write("\r\n");
 			            writer.close();
-			        } catch (IOException error) {
-			            error.printStackTrace();
+			        } catch (IOException e4) {
+			            e4.printStackTrace();
 			        }
 			   }
 			cycleQuery = new StringBuilder("INSERT INTO [dbo].[CYCLETIME] ([TEAMNUM],[MATCHNUM],[PATH],[TIME]) VALUES ");

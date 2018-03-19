@@ -293,17 +293,48 @@ public class Scouting extends GraphicsProgram {
 				String errorQuery = fr.readLine();
 				fr.close();
 				System.out.println(errorQuery);
-				try {
-					DriverManager.setLoginTimeout(1);
-					Connection _connection;
-				   	_connection = DriverManager.getConnection(connectionURL);
-				    PreparedStatement pstmt = _connection.prepareStatement(errorQuery.toString());
-				    pstmt.execute();
-				    pstmt.close();
-					
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
+				while (errorQuery != null) {
+					try {
+						DriverManager.setLoginTimeout(1);
+						Connection _connection;
+					   	_connection = DriverManager.getConnection(connectionURL);
+					    PreparedStatement pstmt = _connection.prepareStatement(errorQuery.toString());
+					    pstmt.execute();
+					    pstmt.close();
+						
+					    try {
+					    	File inputFile = new File("errorlog.txt");
+					    	File tempFile = new File("temperrorlog.txt");
+
+					    	BufferedReader newReader = new BufferedReader(new FileReader(inputFile));
+					    	BufferedWriter newWriter = new BufferedWriter(new FileWriter(tempFile));
+
+					    	String lineToRemove = errorQuery;
+					    	String currentLine;
+
+					    	while((currentLine = newReader.readLine()) != null) {
+					    	    String trimmedLine = currentLine.trim();
+					    	    if(trimmedLine.equals(lineToRemove)) continue;
+					    	    newWriter.write(currentLine + System.getProperty("line.separator"));
+					    	}
+					    	newWriter.close(); 
+					    	newReader.close(); 
+					    	tempFile.renameTo(inputFile);
+					    	try {
+								errorQuery = fr.readLine();
+								fr.close();
+								System.out.println(errorQuery);
+						    } catch (IOException e7) {
+						    	e7.printStackTrace();
+						    }
+					    } catch (IOException e6) {
+					    	e6.printStackTrace();
+					    	errorQuery = null;
+					    }
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+				}	
 			} catch (IOException e2)  {
 				e2.printStackTrace();
 			}

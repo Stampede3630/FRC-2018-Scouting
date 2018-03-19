@@ -321,11 +321,13 @@ public class Scouting extends GraphicsProgram {
 					    	newReader.close(); 
 					    	tempFile.renameTo(inputFile);
 					    	try {
-								errorQuery = fr.readLine();
-								fr.close();
+								BufferedReader br = new BufferedReader(new FileReader("errorlog.txt"));
+								errorQuery = br.readLine();
+								br.close();
 								System.out.println(errorQuery);
 						    } catch (IOException e7) {
 						    	e7.printStackTrace();
+						    	errorQuery = null;
 						    }
 					    } catch (IOException e6) {
 					    	e6.printStackTrace();

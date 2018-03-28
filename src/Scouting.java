@@ -704,61 +704,48 @@ public class Scouting extends GraphicsProgram {
 
 }*/
 	private void writeMatchData(){
-		   try {
-			   	  matchQuery.append('(');
-			      matchQuery.append(teamNumber.toString());
-			      matchQuery.append(',');
-			      matchQuery.append(matchNumber.toString());
-			      matchQuery.append(',');
-			      if(autoRun) matchQuery.append(1);
-			      else matchQuery.append(0);
-			      matchQuery.append(',');
-			      matchQuery.append(autoVault.toString());
-			      matchQuery.append(',');
-			      matchQuery.append(autoSwitch.toString());
-			      matchQuery.append(',');
-			      matchQuery.append(autoScale.toString());
-			      matchQuery.append(',');
-			      matchQuery.append(teleVault.toString());
-			      matchQuery.append(',');
-			      matchQuery.append(teleSwitch.toString());
-			      matchQuery.append(',');
-			      matchQuery.append(teleScale.toString());
-			   	  matchQuery.append(',');
-			   	  matchQuery.append(teleOppSwitch.toString());
-			   	  matchQuery.append(',');
-			   	  matchQuery.append("'");
-			   	  matchQuery.append(climbType.toString());
-			   	  matchQuery.append("'");
-			   	  matchQuery.append(',');
-			   	  matchQuery.append("'");
-			   	  matchQuery.append(notes.toString());
-			   	  matchQuery.append("'");
-			   	  matchQuery.append(')');
+   	  matchQuery.append('(');
+      matchQuery.append(teamNumber.toString());
+      matchQuery.append(',');
+      matchQuery.append(matchNumber.toString());
+      matchQuery.append(',');
+      if(autoRun) matchQuery.append(1);
+      else matchQuery.append(0);
+      matchQuery.append(',');
+      matchQuery.append(autoVault.toString());
+      matchQuery.append(',');
+      matchQuery.append(autoSwitch.toString());
+      matchQuery.append(',');
+      matchQuery.append(autoScale.toString());
+      matchQuery.append(',');
+      matchQuery.append(teleVault.toString());
+      matchQuery.append(',');
+      matchQuery.append(teleSwitch.toString());
+      matchQuery.append(',');
+      matchQuery.append(teleScale.toString());
+   	  matchQuery.append(',');
+   	  matchQuery.append(teleOppSwitch.toString());
+   	  matchQuery.append(',');
+   	  matchQuery.append("'");
+   	  matchQuery.append(climbType.toString());
+   	  matchQuery.append("'");
+   	  matchQuery.append(',');
+   	  matchQuery.append("'");
+   	  matchQuery.append(notes.toString());
+   	  matchQuery.append("'");
+   	  matchQuery.append(')');
 
-			      System.out.println(matchQuery.toString());
-			      
-			      DriverManager.setLoginTimeout(15);
-			      Connection _connection;
-				   	_connection = DriverManager.getConnection(connectionURL);
-			      PreparedStatement pstmt = _connection.prepareStatement(matchQuery.toString());
-			      pstmt.execute();
-			      pstmt.close();
-			   }
-			   catch (Exception e) {
-			      e.printStackTrace();
-			      try {
-			            FileWriter writer = new FileWriter("errorlog.txt", true);
-			            writer.write(matchQuery.toString());
-			            writer.write("\r\n");
-			            writer.close();
-			        } catch (IOException e5) {
-			            e5.printStackTrace();
-			        }
-			   }
-			}
+      System.out.println(matchQuery.toString());
+      try {
+            FileWriter writer = new FileWriter("errorlog.txt", true);
+            writer.write(matchQuery.toString());
+            writer.write("\r\n");
+            writer.close();
+        } catch (IOException e5) {
+            e5.printStackTrace();
+   }
+		   }
 		private void writeCycleData(String pathEnding){
-			try {
 				cycleEnd = (double) currentTime;
 				cycleTime = cycleEnd - cycleStart;
 				pathEnd = pathEnding;
@@ -777,21 +764,7 @@ public class Scouting extends GraphicsProgram {
 				   	cycleQuery.append(')');
 				   	
 				   	System.out.println(cycleQuery.toString());
-				   	
-				   	pathStart = "D";
-				   	
-				   	DriverManager.setLoginTimeout(1);
-					Connection _connection;
-				   	_connection = DriverManager.getConnection(connectionURL);
-				    PreparedStatement pstmt = _connection.prepareStatement(cycleQuery.toString());
-				    pstmt.execute();
-				    pstmt.close();
-				    
-				}
-			   }
-			   catch (Exception e3) {
-			      e3.printStackTrace();
-			      try {
+				   	try {
 			            FileWriter writer = new FileWriter("errorlog.txt", true);
 			            writer.write(cycleQuery.toString());
 			            writer.write("\r\n");
@@ -799,7 +772,9 @@ public class Scouting extends GraphicsProgram {
 			        } catch (IOException e4) {
 			            e4.printStackTrace();
 			        }
-			   }
+				   	pathStart = "D";
+				  
+				}
 			cycleQuery = new StringBuilder("INSERT INTO [dbo].[CYCLETIME] ([TEAMNUM],[MATCHNUM],[PATH],[TIME]) VALUES ");
 			}
 		}
